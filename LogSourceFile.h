@@ -6,10 +6,12 @@
 #include "LogSource.h"
 
 class LogParser;
+class QTimer;
 class QFileSystemWatcher;
 
 class LogSourceFile : public LogSource
 {
+    Q_OBJECT
 public:
     LogSourceFile( LogParser *parser );
     ~LogSourceFile();
@@ -20,9 +22,12 @@ public:
     void setSeparator( const QString &sep );
 
     void read();
+
+    Q_SIGNAL void failedToParse( const QString &str );
 private:
     std::unique_ptr<LogParser> parser_;
     std::unique_ptr<QFileSystemWatcher> fileWatcher_;
+    QTimer *timer_;
 
     QString path_;
     QString separator_;

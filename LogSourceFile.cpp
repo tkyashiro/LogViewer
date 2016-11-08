@@ -11,6 +11,18 @@
 
 #define USE_FILEWATCHER 0
 
+namespace
+{
+class TimerResetter
+{
+public:
+    TimerResetter( QTimer *timer ) : timer_(timer) { timer_->stop(); }
+    ~TimerResetter() { timer_->start(); }
+private:
+    QTimer *timer_;
+};
+}
+
 LogSourceFile::LogSourceFile( LogParser *parser )
     : parser_(parser),
       fileWatcher_(new QFileSystemWatcher()),
@@ -24,10 +36,10 @@ LogSourceFile::LogSourceFile( LogParser *parser )
     QObject::connect( fileWatcher_.get(), &QFileSystemWatcher::directoryChanged,
                       this, &LogSourceFile::onFileChanged );
 #else
-    QTimer *timer = new QTimer(this);
-    timer->setInterval( 1/*sec*/ * 1000 );
-    connect( timer, &QTimer::timeout, this, &LogSourceFile::onTimeout );
-    timer->start();
+    timer_ = new QTimer(this);
+    timer_->setInterval( 1/*sec*/ * 1000 );
+    connect( timer_, &QTimer::timeout, this, &LogSourceFile::onTimeout );
+    timer_->start();
 #endif
 }
 
@@ -82,6 +94,8 @@ void LogSourceFile::onTimeout()
 
 void LogSourceFile::read()
 {
+    TimerResetter resetter(timer_);
+
     QFile file( path_ );
     if ( ! file.open( QIODevice::ReadOnly ) )
     {
@@ -113,7 +127,7 @@ void LogSourceFile::read()
             }
             catch(const std::exception &e)
             {
-                e; ///@todo error handling
+                emit failedToParse(s);
             }
         }
 

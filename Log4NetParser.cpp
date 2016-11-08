@@ -33,7 +33,8 @@ LogEntry RegExpParser::parse( const QString &buf )
     }
     else
     {
-        throw std::exception(); ///@todo use dedicated exception
+        return LogEntry();
+        ///throw std::exception(); ///@todo use dedicated exception
     }
 }
 
