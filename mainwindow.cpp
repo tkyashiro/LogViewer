@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     const int n = s.beginReadArray("LastUsed");
     for( int i = 0; i < n; ++i )
     {
+        s.setArrayIndex(i);
         lastUsed_.push_back( s.value("Path").toString() );
     }
     s.endArray();
@@ -49,6 +50,11 @@ void MainWindow::openNewSource()
 
 void MainWindow::openSource( const QString &path )
 {
+    if( ! QFile::exists(path) )
+    {
+        return;
+    }
+
     ///@todo load config
     const QString exp("(\\[.*\\])(\\[.*\\])(\\[.*\\])(\\[.*\\])(\\[.*\\])(\\[.*\\])");
     std::unique_ptr<RegExpParser> parser(new RegExpParser(exp));
