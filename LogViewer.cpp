@@ -17,25 +17,34 @@ LogViewer::LogViewer( QWidget *parent )
     model_(new LogModel()),
     timer_(new QTimer()),
     total_(0),
-    lbl_(new QLabel("Label")),
+    lbl_(new QLabel()),
+    lblFailed_(new QLabel()),
     table_(new QTableView())
 {
+    timer_->setInterval(500);
     connect( timer_.get(), &QTimer::timeout, this, &LogViewer::onTimeOut );
 
-    QVBoxLayout *hl = new QVBoxLayout();
+    QVBoxLayout *vl = new QVBoxLayout();
 
     table_->setModel( model_.get() );
-    hl->addWidget( table_ );
+    vl->addWidget( table_ );
 
-    hl->addWidget( lbl_ );
+    QHBoxLayout *hl = new QHBoxLayout();
+    {
+        hl->addWidget( lbl_ );
+        hl->addStretch();
+        hl->addWidget( lblFailed_ );
+    }
+    vl->addLayout( hl );
 
-    setLayout(hl);
+    setLayout(vl);
 
     connect( model_.get(), &LogModel::logsAdded, this, &LogViewer::logsAdded );
 }
 
 LogViewer::~LogViewer()
 {
+    timer_->stop();
 }
 
 void LogViewer::setLogSource( LogSource *source )

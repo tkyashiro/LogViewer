@@ -28,6 +28,7 @@ private:
 
     int total_;
     QLabel *lbl_;
+    QLabel *lblFailed_;
     QTableView *table_;
 private:
     void onTimeOut();
