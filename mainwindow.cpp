@@ -23,7 +23,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect( ui->actionOpen, &QAction::triggered, this, &MainWindow::openNewSource );
 
+    loadSettings();
+}
+
+void MainWindow::loadSettings()
+{
     QSettings s;
+
+    loadLastUsedFile( s );
+    restoreLastSize();
+}
+
+void MainWindow::loadLastUsedFile( QSettings &s )
+{
     const int n = s.beginReadArray("LastUsed");
     for( int i = 0; i < n; ++i )
     {
@@ -32,11 +44,40 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     s.endArray();
     updateLastUsedFileMenu();
+
+}
+
+void MainWindow::restoreLastSize()
+{
+    QSettings s;
+
+    if( s.contains("Size") )
+    {
+        resize( s.value("Size").toSize() );
+    }
+    if( s.value("Maximized", false).toBool() )
+    {
+        showMaximized();
+    }
 }
 
 MainWindow::~MainWindow()
 {
+    saveSettings();
     delete ui;
+}
+
+void MainWindow::saveSettings()
+{
+    saveLastUsedFile();
+    saveCurrentSize();
+}
+
+void MainWindow::saveCurrentSize()
+{
+    QSettings s;
+    s.setValue( "Size", size() );
+    s.setValue( "Maximized", isMaximized() );
 }
 
 void MainWindow::openNewSource()
@@ -78,6 +119,7 @@ void MainWindow::openSource( const QString &path )
     updateLastUsedFile( path );
 }
 
+
 void MainWindow::updateLastUsedFile( const QString &path )
 {
     if( lastUsed_.contains( path ) )
@@ -86,6 +128,13 @@ void MainWindow::updateLastUsedFile( const QString &path )
     }
     lastUsed_.prepend( path );
 
+    saveLastUsedFile();
+
+    updateLastUsedFileMenu();
+}
+
+void MainWindow::saveLastUsedFile()
+{
     QSettings s;
     const int n = std::min(lastUsed_.size(), 5);
     s.beginWriteArray("LastUsed");
@@ -95,8 +144,6 @@ void MainWindow::updateLastUsedFile( const QString &path )
         s.setValue( "Path", lastUsed_[i] );
     }
     s.endArray();
-
-    updateLastUsedFileMenu();
 }
 
 void MainWindow::updateLastUsedFileMenu()

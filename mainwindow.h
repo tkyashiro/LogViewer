@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 class LogViewer;
+class QSettings;
 
 namespace Ui {
 class MainWindow;
@@ -26,6 +27,16 @@ private:
     void openNewSource();
     void openSource( const QString &path );
     Q_SLOT void openRecent();
+
+    void loadSettings();
+    void saveSettings();
+
+    void loadLastUsedFile( QSettings &s );
+    void saveLastUsedFile();
+
+    void saveCurrentSize();
+    void restoreLastSize();
+
     void updateLastUsedFile( const QString &path );
     void updateLastUsedFileMenu();
 };
