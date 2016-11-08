@@ -16,10 +16,12 @@ class LogModel : public QAbstractTableModel
 public:
     void append( const LogEntry &e );
     void append( const std::vector<LogEntry> && l );
+    void clear();
+
     bool insertRow(int row, const QModelIndex &parent);
     bool insertRows(int row, int count, const QModelIndex &parent);
-    bool setData(const QModelIndex &index, const QVariant &value, int role);
 
+    bool setData(const QModelIndex &index, const QVariant &value, int role);
     QVariant data( const QModelIndex &index, int role ) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 

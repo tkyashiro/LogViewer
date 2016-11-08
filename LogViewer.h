@@ -20,6 +20,7 @@ public:
     ~LogViewer();
 
     void setLogSource( LogSource *source );
+    void clear();
 private:
     std::unique_ptr<LogSource> source_;
 
@@ -33,6 +34,7 @@ private:
 private:
     void onTimeOut();
     void logsAdded( int n );
+    void maybeScroll();
 };
 
 

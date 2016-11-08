@@ -114,6 +114,7 @@ void MainWindow::openSource( const QString &path )
 
     source->read();
 
+    viewer_->clear();
     viewer_->setLogSource( source.release() );
 
     updateLastUsedFile( path );

@@ -155,3 +155,12 @@ bool LogModel::setData(const QModelIndex &index, const QVariant &value, int role
     return true;
 }
 
+void LogModel::clear()
+{
+    if( entries_.size() > 0 )
+    {
+        beginRemoveRows( QModelIndex(), 0, entries_.size()-1 );
+        entries_.clear();
+        endRemoveRows();
+    }
+}

@@ -6,6 +6,7 @@
 #include <QHeaderView>
 #include <QLabel>
 #include <QLayout>
+#include <QScrollBar>
 #include <QTableView>
 #include <QTimer>
 
@@ -40,6 +41,7 @@ LogViewer::LogViewer( QWidget *parent )
     setLayout(vl);
 
     connect( model_.get(), &LogModel::logsAdded, this, &LogViewer::logsAdded );
+    connect( model_.get(), &LogModel::logsAdded, this, &LogViewer::maybeScroll );
 }
 
 LogViewer::~LogViewer()
@@ -72,4 +74,20 @@ void LogViewer::logsAdded( int n )
 {
     total_ += n;
     lbl_->setText( QString("added : %1 / total : %2").arg(n).arg(total_));
+}
+
+void LogViewer::clear()
+{
+    Q_ASSERT( model_ );
+    model_->clear();
+}
+
+void LogViewer::maybeScroll()
+{
+    QScrollBar *vs = table_->verticalScrollBar();
+    Q_ASSERT(vs);
+    if( vs->value() == vs->maximum() )
+    {
+        table_->scrollToBottom();
+    }
 }
