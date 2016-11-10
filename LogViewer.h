@@ -20,6 +20,7 @@ public:
     ~LogViewer();
 
     void setLogSource( LogSource *source );
+    void clear();
 private:
     std::unique_ptr<LogSource> source_;
 
@@ -28,10 +29,12 @@ private:
 
     int total_;
     QLabel *lbl_;
+    QLabel *lblFailed_;
     QTableView *table_;
 private:
     void onTimeOut();
     void logsAdded( int n );
+    void maybeScroll();
 };
 
 

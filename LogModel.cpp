@@ -39,7 +39,10 @@ int LogModel::columnCount( const QModelIndex & ) const
 QVariant LogModel::data( const QModelIndex &index, int role ) const
 {
     const LogEntry &e = entries_[index.row()];
-    if( role == Qt::DisplayRole )
+    switch( role )
+    {
+    case Qt::DisplayRole :
+    case Qt::ToolTipRole :
     {
         switch( index.column() )
         {
@@ -55,17 +58,16 @@ QVariant LogModel::data( const QModelIndex &index, int role ) const
             return QVariant();
         }
     }
-    else if( role == Qt::BackgroundRole )
+    case Qt::BackgroundRole :
     {
-        static QMap<QString, QColor> color = {
-            { "ERROR", QColor(255,0,0) }
-        };
+        static QMap<QString, QColor> color = { ///@todo set it from outside
+                                               { "ERROR", QColor(255,0,0) }
+                                             };
         const QString s = e.getSeverity();
         if( color.contains(s) ){ return color[s]; }
         else { return QVariant(); }
     }
-    else
-    {
+    default:
         return QVariant();
     }
 }
@@ -168,3 +170,12 @@ bool LogModel::setData(const QModelIndex &index, const QVariant &value, int role
     return true;
 }
 
+void LogModel::clear()
+{
+    if( entries_.size() > 0 )
+    {
+        beginRemoveRows( QModelIndex(), 0, entries_.size()-1 );
+        entries_.clear();
+        endRemoveRows();
+    }
+}
