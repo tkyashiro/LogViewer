@@ -4,8 +4,6 @@ cmake_minimum_required(VERSION 2.8.10.2)
 
 find_package(Qt5Widgets REQUIRED)
 
-message(STATUS "Qt5 --> ${Qt5Widgets_VERSION_STRING}") #この行はQtのバージョンを表示する。無いならなくてもいい
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 
@@ -20,6 +18,7 @@ set( LogViewer_SOURCES
     LogSource.cpp
     LogSourceFile.cpp
     LogViewer.cpp
+    LogViewerSettingsWidget.cpp
     )
 
 set ( LogViewer_UI_SOURCES

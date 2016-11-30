@@ -75,6 +75,17 @@ QVariant LogModel::headerData(int section, Qt::Orientation orientation, int role
     }
 }
 
+QMap<QString,QColor> LogModel::getColors() const
+{
+    return colors_;
+}
+
+void LogModel::setColors(const QMap<QString,QColor> &colors)
+{
+    colors_ = colors;
+}
+
+
 void LogModel::append( const LogEntry &e )
 {
     const int r = entries_.size();

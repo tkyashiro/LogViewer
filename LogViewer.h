@@ -21,6 +21,9 @@ public:
 
     void setLogSource( LogSource *source );
     void clear();
+
+    QMap<QString,QColor> getColors() const;
+    void setColors(const QMap<QString,QColor> &colors);
 private:
     std::unique_ptr<LogSource> source_;
 

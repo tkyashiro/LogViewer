@@ -49,6 +49,16 @@ LogViewer::~LogViewer()
     timer_->stop();
 }
 
+QMap<QString,QColor> LogViewer::getColors() const
+{
+    return model_->getColors();
+}
+
+void LogViewer::setColors(const QMap<QString,QColor> &colors)
+{
+    model_->setColors(colors);
+}
+
 void LogViewer::setLogSource( LogSource *source )
 {
     timer_->stop();

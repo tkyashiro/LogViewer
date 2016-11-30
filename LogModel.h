@@ -6,9 +6,10 @@
 #include "LogEntry.h"
 
 #include <QAbstractTableModel>
+#include <QColor>
+#include <QMap>
 
 #include <vector>
-
 
 class LogModel : public QAbstractTableModel
 {
@@ -25,12 +26,16 @@ public:
     QVariant data( const QModelIndex &index, int role ) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
+    QMap<QString,QColor> getColors() const;
+    void setColors(const QMap<QString,QColor> &colors);
+
     int rowCount( const QModelIndex &parent ) const;
     int columnCount( const QModelIndex &parent ) const;
 
     Q_SIGNAL void logsAdded( int n );
 private:
     std::vector<LogEntry> entries_;
+    QMap<QString,QColor> colors_;
 private:
     void setData( int r, const LogEntry &e );
 };
