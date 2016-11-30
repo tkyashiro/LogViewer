@@ -1,6 +1,8 @@
 #include "LogModel.h"
 #include "LogEntry.h"
 
+#include <QColor>
+
 namespace
 {
 enum {
@@ -36,23 +38,36 @@ int LogModel::columnCount( const QModelIndex & ) const
 
 QVariant LogModel::data( const QModelIndex &index, int role ) const
 {
-    if( role != Qt::DisplayRole )
-    {
-        return QVariant();
-    }
-
     const LogEntry &e = entries_[index.row()];
-    switch( index.column() )
+    switch( role )
     {
-    case eSeverity: return e.getSeverity();
-    case eFunc: return e.getFunc();
-    case eFile: return e.getFile();
-    case eLine: return e.getLine();
-    case eMessage: return e.getMessage();
-    case eThread: return e.getThread();
-    case eTime: return e.getTime();
+    case Qt::DisplayRole :
+    case Qt::ToolTipRole :
+    {
+        switch( index.column() )
+        {
+        case eSeverity: return e.getSeverity();
+        case eFunc: return e.getFunc();
+        case eFile: return e.getFile();
+        case eLine: return e.getLine();
+        case eMessage: return e.getMessage();
+        case eThread: return e.getThread();
+        case eTime: return e.getTime();
+        default:
+            Q_ASSERT(false);
+            return QVariant();
+        }
+    }
+    case Qt::BackgroundRole :
+    {
+        static QMap<QString, QColor> color = { ///@todo set it from outside
+                                               { "ERROR", QColor(255,0,0) }
+                                             };
+        const QString s = e.getSeverity();
+        if( color.contains(s) ){ return color[s]; }
+        else { return QVariant(); }
+    }
     default:
-        Q_ASSERT(false);
         return QVariant();
     }
 }

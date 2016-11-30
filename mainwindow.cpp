@@ -82,7 +82,8 @@ void MainWindow::saveCurrentSize()
 
 void MainWindow::openNewSource()
 {
-    static QString path = QFileDialog::getOpenFileName();
+    static QString path;
+    path = QFileDialog::getOpenFileName();
     if( ! path.isEmpty() )
     {
         openSource(path);
@@ -96,6 +97,8 @@ void MainWindow::openSource( const QString &path )
         return;
     }
 
+#if TEST_TYA
+
     ///@todo load config
     const QString exp("(\\[.*\\])(\\[.*\\])(\\[.*\\])(\\[.*\\])(\\[.*\\])(\\[.*\\])");
     std::unique_ptr<RegExpParser> parser(new RegExpParser(exp));
@@ -107,6 +110,26 @@ void MainWindow::openSource( const QString &path )
     parser->setMapping(LogEntry::Item::message, 6);
 
     std::unique_ptr<LogSourceFile> source( new LogSourceFile(parser.release()) );
+#else
+    const QString exp(
+                ".*: (\\d+-\\d+-\\d+ \\d+:\\d+:\\d+,\\d+): \\[(\\d+)\\]: (.*)\\s*:\\s*"
+                "\\[(.*)\\]\\s*-\\s*(\\d+)\\s*-\\s*(\\S+)\\s*(\\S.*)$"
+                );
+    std::unique_ptr<RegExpParser> parser(new RegExpParser(exp));
+    parser->setMapping(LogEntry::Item::time, 1);
+    parser->setMapping(LogEntry::Item::thread, 2);
+    parser->setMapping(LogEntry::Item::severity, 3);
+    parser->setMapping(LogEntry::Item::func, 4);
+    parser->setMapping(LogEntry::Item::line, 5);
+    parser->setMapping(LogEntry::Item::file, 6);
+    parser->setMapping(LogEntry::Item::message, 7);
+
+    std::unique_ptr<LogSourceFile> source( new LogSourceFile(parser.release()) );
+    source->setSeparator(
+                "====================================================================================================================="
+                );
+#endif
+
     if( ! source->setPath( path ) )
     {
         return;

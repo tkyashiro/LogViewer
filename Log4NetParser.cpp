@@ -33,7 +33,8 @@ LogEntry RegExpParser::parse( const QString &buf )
     }
     else
     {
-        throw std::exception(); ///@todo use dedicated exception
+        return LogEntry();
+        ///throw std::exception(); ///@todo use dedicated exception
     }
 }
 
@@ -64,7 +65,7 @@ LogEntry RegExpParser::entryFromRegex() const
 
     if( (pos = mapping_.at(LogEntry::Item::message)) > 0 )
     {
-        e.setMessage( regex_.cap(pos) );
+        e.setMessage( regex_.cap(pos).replace(QChar::CarriageReturn, QChar::LineFeed) );
     }
 
     if( (pos = mapping_.at(LogEntry::Item::thread)) > 0 )
