@@ -21,6 +21,9 @@ public:
 
     void setLogSource( LogSource *source );
     void clear();
+
+    QList<int> getColumnWidths() const;
+    void setColumnWidths( const QList<int> &widths );
 private:
     std::unique_ptr<LogSource> source_;
 

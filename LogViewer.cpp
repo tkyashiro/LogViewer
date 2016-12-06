@@ -61,6 +61,31 @@ void LogViewer::setLogSource( LogSource *source )
     }
 }
 
+QList<int> LogViewer::getColumnWidths() const
+{
+    QList<int> ws;
+
+    QHeaderView *h = table_->horizontalHeader();
+    Q_ASSERT( h );
+    const int n = h->count();
+
+    for( int c = 0; c < n; ++c )
+    {
+        ws.append( h->sectionSize(c) );
+    }
+
+    return ws;
+}
+
+void LogViewer::setColumnWidths( const QList<int> &widths )
+{
+    const int n = widths.size();
+    for( int c = 0; c < n; ++c )
+    {
+        table_->setColumnWidth( c, widths[c] );
+    }
+}
+
 void LogViewer::onTimeOut()
 {
     assert( source_.get() );
