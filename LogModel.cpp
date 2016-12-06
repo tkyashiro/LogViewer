@@ -6,23 +6,23 @@
 namespace
 {
 enum {
-    eSeverity = 0,
+    eTime = 0,
+    eThread,
+    eSeverity,
+    eMessage,
     eFunc,
     eFile,
     eLine,
-    eMessage,
-    eThread,
-    eTime,
     eSentinel
 };
 std::array<const char*,7> sHeaders = {
+    "Time",
+    "Thread",
     "Severity",
+    "Message",
     "Func",
     "File",
     "Line",
-    "Message",
-    "Thread",
-    "Time",
 };
 }
 
@@ -52,7 +52,7 @@ QVariant LogModel::data( const QModelIndex &index, int role ) const
         case eLine: return e.getLine();
         case eMessage: return e.getMessage();
         case eThread: return e.getThread();
-        case eTime: return e.getTime();
+        case eTime: return e.getTime().toString("yyyy/MM/dd hh:mm:ss:zzz");
         default:
             Q_ASSERT(false);
             return QVariant();
@@ -61,6 +61,7 @@ QVariant LogModel::data( const QModelIndex &index, int role ) const
     case Qt::BackgroundRole :
     {
         static QMap<QString, QColor> color = { ///@todo set it from outside
+                                               { "", QColor(255,255,0) },
                                                { "ERROR", QColor(255,0,0) }
                                              };
         const QString s = e.getSeverity();
