@@ -15,6 +15,17 @@ class LogModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
+    enum {
+        eTime = 0,
+        eThread,
+        eSeverity,
+        eMessage,
+        eFunc,
+        eFile,
+        eLine,
+        eSentinel
+    };
+public:
     void append( const LogEntry &e );
     void append( const std::vector<LogEntry> && l );
     void clear();
@@ -24,6 +35,7 @@ public:
 
     bool setData(const QModelIndex &index, const QVariant &value, int role);
     QVariant data( const QModelIndex &index, int role ) const;
+
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
     QMap<QString,QColor> getColors() const;

@@ -127,6 +127,9 @@ void LogSourceFile::read()
             }
             catch(const std::exception &e)
             {
+                LogEntry le;
+                le.setMessage( s );
+                list.push_back(le);
                 emit failedToParse(s);
             }
         }

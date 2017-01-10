@@ -47,6 +47,26 @@ void MainWindow::loadLastUsedFile( QSettings &s )
 
 }
 
+namespace {
+
+template <typename T>
+QVariantList variantListFromList( const QList<T> &l )
+{
+    QVariantList vl;
+    std::for_each( l.begin(), l.end(), [&vl](const T &t){ vl.push_back(t); } );
+    return vl;
+}
+
+template <typename T>
+QList<T> listFromVariantList( const QVariantList &vl )
+{
+    QList<T> l;
+    std::for_each( vl.begin(), vl.end(), [&l](const QVariant &v){ l.push_back(v.value<T>());} );
+    return l;
+}
+
+}
+
 void MainWindow::restoreLastSize()
 {
     QSettings s;
@@ -58,6 +78,11 @@ void MainWindow::restoreLastSize()
     if( s.value("Maximized", false).toBool() )
     {
         showMaximized();
+    }
+
+    if( s.contains("Columns") )
+    {
+        viewer_->setColumnWidths( listFromVariantList<int>( s.value("Columns").toList() ) );
     }
 }
 
@@ -78,6 +103,8 @@ void MainWindow::saveCurrentSize()
     QSettings s;
     s.setValue( "Size", size() );
     s.setValue( "Maximized", isMaximized() );
+
+    s.setValue( "Columns", variantListFromList<int>(viewer_->getColumnWidths()) );
 }
 
 void MainWindow::openNewSource()
@@ -112,9 +139,12 @@ void MainWindow::openSource( const QString &path )
     std::unique_ptr<LogSourceFile> source( new LogSourceFile(parser.release()) );
 #else
     const QString exp(
-                ".*: (\\d+-\\d+-\\d+ \\d+:\\d+:\\d+,\\d+): \\[(\\d+)\\]: (.*)\\s*:\\s*"
-                "\\[(.*)\\]\\s*-\\s*(\\d+)\\s*-\\s*(\\S+)\\s*(\\S.*)$"
+                ".*: (\\d+-\\d+-\\d+ \\d+:\\d+:\\d+,\\d+): \\[(\\d+)\\]: (.*)\\s*:\\s*" // PC name\Account Name: 2016-12-01 16:20:51,640: [1]: INFO :
+                "\\[(.*)\\]\\s*-\\s*(\\d+)\\s*-\\s*(.+)\\r"                             // [FuncName] - 207 - path to the file may include space.cpp
+                "\\s*(\\S.*)$"                                                          // log log log log...
                 );
+
+
     std::unique_ptr<RegExpParser> parser(new RegExpParser(exp));
     parser->setMapping(LogEntry::Item::time, 1);
     parser->setMapping(LogEntry::Item::thread, 2);
@@ -123,6 +153,7 @@ void MainWindow::openSource( const QString &path )
     parser->setMapping(LogEntry::Item::line, 5);
     parser->setMapping(LogEntry::Item::file, 6);
     parser->setMapping(LogEntry::Item::message, 7);
+    parser->setDateTimeFormat("yyyy-MM-dd hh:mm:ss,zzz"); // 2016-11-10 14:49:22,965
 
     std::unique_ptr<LogSourceFile> source( new LogSourceFile(parser.release()) );
     source->setSeparator(
@@ -183,8 +214,10 @@ void MainWindow::updateLastUsedFileMenu()
     {
         QAction *a = recentMenu->addAction(QFileInfo(lastUsed_[i]).fileName());
         a->setData( lastUsed_[i] );
+        a->setToolTip( lastUsed_[i] );
         connect( a, &QAction::triggered, this, &MainWindow::openRecent );
     }
+    recentMenu->setToolTipsVisible( true );
     ui->actionRecent->setMenu( recentMenu );
 }
 
