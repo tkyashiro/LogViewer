@@ -27,6 +27,6 @@ set(LogViewer_SOURCES
 set (LogViewer_UI_SOURCES
     mainwindow.ui)
 
-add_executable(LogViewer ${LogViewer_SOURCES} ${LogViewer_UI_SOURCES})
+add_executable(LogViewer WIN32 ${LogViewer_SOURCES} ${LogViewer_UI_SOURCES})
 
 QT5_USE_MODULES(LogViewer Widgets)
