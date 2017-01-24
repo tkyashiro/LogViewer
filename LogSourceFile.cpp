@@ -143,6 +143,8 @@ void LogSourceFile::read()
 
     append( std::move(list) );
 
+    emit waitingToBeParsed(buf_);
+
     nextPos_ = st.pos();
 }
 

@@ -7,8 +7,12 @@
 #include "Log4NetParser.h"
 
 #include <QFileDialog>
+#include <QLabel>
 #include <QLayout>
 #include <QSettings>
+
+//#define TEST_TYA
+//#define TEST_IS
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -124,9 +128,8 @@ void MainWindow::openSource( const QString &path )
         return;
     }
 
-#if TEST_TYA
-
     ///@todo load config
+#if TEST_TYA
     const QString exp("(\\[.*\\])(\\[.*\\])(\\[.*\\])(\\[.*\\])(\\[.*\\])(\\[.*\\])");
     std::unique_ptr<RegExpParser> parser(new RegExpParser(exp));
     parser->setMapping(LogEntry::Item::severity, 1);
@@ -135,6 +138,20 @@ void MainWindow::openSource( const QString &path )
     parser->setMapping(LogEntry::Item::func, 4);
     parser->setMapping(LogEntry::Item::line, 5);
     parser->setMapping(LogEntry::Item::message, 6);
+
+    std::unique_ptr<LogSourceFile> source( new LogSourceFile(parser.release()) );
+#elif defined(TEST_IS)
+    const QString exp("[\\[(.*)\\]\\[(.*)\\]\\[T:(.*)\\]\\[L:(.*)\\]\\[(.*)\\]\\[(.*)\\]\\[(.*)\\](.*)");
+    //                 [1478063781833][2][T:1][L:1][C:/jenkinsWork/horus_release_64bit/Horus/Libraries/Model/private/Analysis.cpp][void Analysis::triggerUpdate()][296]Run analysis  19
+
+    std::unique_ptr<RegExpParser> parser(new RegExpParser(exp));
+    parser->setMapping(LogEntry::Item::time, 1);
+    parser->setMapping(LogEntry::Item::severity, 2);
+    parser->setMapping(LogEntry::Item::thread, 3);
+    parser->setMapping(LogEntry::Item::file, 5);
+    parser->setMapping(LogEntry::Item::func, 6);
+    parser->setMapping(LogEntry::Item::line, 7);
+    parser->setMapping(LogEntry::Item::message, 8);
 
     std::unique_ptr<LogSourceFile> source( new LogSourceFile(parser.release()) );
 #else
@@ -167,6 +184,11 @@ void MainWindow::openSource( const QString &path )
     }
 
     source->read();
+
+    QLabel *lblStatus = new QLabel();
+    ui->statusBar->addWidget(lblStatus);
+    connect( source.get(), &LogSourceFile::waitingToBeParsed,
+             [lblStatus](const QString &text){ lblStatus->setText((text.length() > 100 ? text.left(100).append("...") : text));} ); ///maybe unsafe...
 
     viewer_->clear();
     viewer_->setLogSource( source.release() );

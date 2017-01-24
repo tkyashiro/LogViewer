@@ -24,6 +24,7 @@ public:
     void read();
 
     Q_SIGNAL void failedToParse( const QString &str );
+    Q_SIGNAL void waitingToBeParsed( const QString &s );
 private:
     std::unique_ptr<LogParser> parser_;
     std::unique_ptr<QFileSystemWatcher> fileWatcher_;
