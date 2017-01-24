@@ -9,8 +9,12 @@
 #include <QLayout>
 #include <QScrollBar>
 #include <QTableView>
+#include <QTextBrowser>
 #include <QTimer>
+#include <QUrl>
 #include <QInputDialog>
+#include <QDesktopServices>
+#include <QMessageBox>
 
 #include <assert.h>
 
@@ -46,6 +50,8 @@ LogViewer::LogViewer( QWidget *parent )
 
     connect( model_.get(), &LogModel::logsAdded, this, &LogViewer::logsAdded );
     connect( model_.get(), &LogModel::logsAdded, this, &LogViewer::maybeScroll );
+
+    connect( table_, &QTableView::doubleClicked, this, &LogViewer::onCellDoubleClicked );
 
     connect( table_->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &LogViewer::inputFilter );
 
@@ -163,4 +169,55 @@ void LogViewer::maybeScroll()
     {
         table_->scrollToBottom();
     }
+}
+
+namespace
+{
+void showTextBrowser(const QString &string, QWidget *parent);
+}
+
+void LogViewer::onCellDoubleClicked(const QModelIndex &index)
+{
+    switch (index.column()) {
+    case LogModel::eFile:
+    {
+        const QString &file = model_->data(index, Qt::DisplayRole).toString();
+        if (file.isEmpty())
+        {
+            return;
+        }
+        const bool b = QDesktopServices::openUrl( QUrl::fromLocalFile(file) );
+        if (!b)
+        {
+            QMessageBox::warning(this, tr("Failed to open file"), tr("Could not open %1").arg(file));
+        }
+        break;
+    }
+    case LogModel::eMessage:
+    {
+        showTextBrowser(model_->data(index, Qt::DisplayRole).toString(), table_);
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+namespace
+{
+void showTextBrowser(const QString &string, QWidget *parent)
+{
+    QDialog dlg(parent);
+    {
+        QVBoxLayout *vl = new QVBoxLayout();
+        QTextBrowser *browser = new QTextBrowser(&dlg);
+        browser->setText(string);
+        vl->addWidget(browser);
+
+        dlg.setLayout(vl);
+    }
+
+    dlg.exec();
+}
+
 }

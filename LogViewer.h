@@ -40,6 +40,7 @@ private:
     QLabel *lblFailed_;
     QTableView *table_;
 private:
+    void onCellDoubleClicked(const QModelIndex &index);
     void onTimeOut();
     void logsAdded( int n );
     void maybeScroll();
