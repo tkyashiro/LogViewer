@@ -25,6 +25,9 @@ MainWindow::MainWindow(QWidget *parent) :
     l->addWidget( viewer_ );
     ui->centralWidget->setLayout( l );
 
+    lblStatus_ = new QLabel();
+    ui->statusBar->addWidget(lblStatus_);
+
     connect( ui->actionOpen, &QAction::triggered, this, &MainWindow::openNewSource );
 
     loadSettings();
@@ -185,10 +188,8 @@ void MainWindow::openSource( const QString &path )
 
     source->read();
 
-    QLabel *lblStatus = new QLabel();
-    ui->statusBar->addWidget(lblStatus);
     connect( source.get(), &LogSourceFile::waitingToBeParsed,
-             [lblStatus](const QString &text){ lblStatus->setText((text.length() > 100 ? text.left(100).append("...") : text));} ); ///maybe unsafe...
+             [this](const QString &text){ lblStatus_->setText((text.length() > 100 ? text.left(100).append("...") : text));} );
 
     viewer_->clear();
     viewer_->setLogSource( source.release() );

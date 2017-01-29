@@ -5,6 +5,7 @@
 
 class LogViewer;
 class QSettings;
+class QLabel;
 
 namespace Ui {
 class MainWindow;
@@ -22,6 +23,8 @@ private:
     Ui::MainWindow *ui;
 
     LogViewer *viewer_;
+    QLabel *lblStatus_;
+
     QList<QString> lastUsed_;
 private:
     void openNewSource();

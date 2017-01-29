@@ -46,7 +46,7 @@ QVariant LogModel::data( const QModelIndex &index, int role ) const
             return (role == Qt::ToolTipRole ? s.left(300) // enough length for tooltip
                                             : s);
         }
-        case eThread: return e.getThread();
+        case eThread: return QVariant::fromValue<int64_t>(e.getThread());
         case eTime: return e.getTime().toString("yyyy/MM/dd hh:mm:ss:zzz");
         default:
             Q_ASSERT(false);
