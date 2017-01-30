@@ -19,7 +19,7 @@ node
 	stage("Test")
 	{
 		sh "cd build && rm -rf ./Testnig/ && ctest --no-compress-output -T Test || /usr/bin/true"
-		junit 'build/Testing/*.xml'
+		junit 'build/Testing/**/Test.xml'
 	}
 
 	stage("Pack")
