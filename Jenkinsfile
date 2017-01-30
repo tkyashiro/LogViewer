@@ -2,7 +2,7 @@ node
 {
 	stage("Checkout")
 	{
-		bit url: 'https://github.com/tkyashiro/LogViewer.git'
+		git url: 'https://github.com/tkyashiro/LogViewer.git'
 	}
 
 	stage("CMake")
