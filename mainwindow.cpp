@@ -5,13 +5,15 @@
 #include "LogSourceFile.h"
 #include "LogParser.h"
 #include "Log4NetParser.h"
+#include "LogViewerSettingsWidget.h"
 
+#include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QLabel>
 #include <QLayout>
 #include <QSettings>
 
-//#define TEST_TYA
+#define TEST_TYA 1
 //#define TEST_IS
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -19,6 +21,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setupUi();
+
+    connect( ui->actionOpen, &QAction::triggered, this, &MainWindow::openNewSource );
+    connect( ui->actionSettings, &QAction::triggered, this, &MainWindow::openSettings );
+
+    loadSettings();
+}
+
+void MainWindow::setupUi()
+{
     viewer_ = new LogViewer();
 
     QHBoxLayout *l = new QHBoxLayout();
@@ -27,10 +39,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     lblStatus_ = new QLabel();
     ui->statusBar->addWidget(lblStatus_);
-
-    connect( ui->actionOpen, &QAction::triggered, this, &MainWindow::openNewSource );
-
-    loadSettings();
 }
 
 void MainWindow::loadSettings()
@@ -133,7 +141,7 @@ void MainWindow::openSource( const QString &path )
 
     ///@todo load config
 #if TEST_TYA
-    const QString exp("(\\[.*\\])(\\[.*\\])(\\[.*\\])(\\[.*\\])(\\[.*\\])(\\[.*\\])");
+    const QString exp("\\[(.*)\\]\\[(.*)\\]\\[(.*)\\]\\[(.*)\\]\\[(.*)\\]\\[(.*)\\]");
     std::unique_ptr<RegExpParser> parser(new RegExpParser(exp));
     parser->setMapping(LogEntry::Item::severity, 1);
     parser->setMapping(LogEntry::Item::time, 2);
@@ -249,4 +257,27 @@ void MainWindow::openRecent()
     QAction *a = qobject_cast<QAction*>(sender());
     Q_ASSERT( a );
     openSource( a->data().toString() );
+}
+
+void MainWindow::openSettings()
+{
+    QSettings s;
+
+    QDialog dlg;
+    LogViewerSettingsWidget *w = new LogViewerSettingsWidget(&s, &dlg);
+    QVBoxLayout *l = new QVBoxLayout();
+    {
+        dlg.setLayout(l);
+        l->addWidget(w);
+
+        QDialogButtonBox *btns = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+        connect(btns, &QDialogButtonBox::accepted, &dlg, &QDialog::accept);
+        connect(btns, &QDialogButtonBox::rejected, &dlg, &QDialog::reject);
+        l->addWidget(btns);
+    }
+    const int r = dlg.exec();
+    if (r == QDialog::Accepted)
+    {
+        w->applyOn(s, viewer_);
+    }
 }

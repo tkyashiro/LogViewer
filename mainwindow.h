@@ -27,9 +27,13 @@ private:
 
     QList<QString> lastUsed_;
 private:
+    void setupUi();
+
     void openNewSource();
     void openSource( const QString &path );
     Q_SLOT void openRecent();
+
+    void openSettings();
 
     void loadSettings();
     void saveSettings();

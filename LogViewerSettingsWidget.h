@@ -4,20 +4,25 @@
 #include <QWidget>
 
 class LogViewer;
+class QLineEdit;
 class QTableWidget;
+class QSettings;
 
 class LogViewerSettingsWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit LogViewerSettingsWidget(LogViewer *viewer, QWidget *parent = 0);
+    explicit LogViewerSettingsWidget(QSettings *s, QWidget *parent = 0);
 
-    void applyOn( LogViewer *viewer ) const;
+    void applyOn( QSettings &s, LogViewer *viewer ) const;
 
 private:
     QTableWidget *table_;
+    QLineEdit *lineSource_;
+    QLineEdit *lineLocal_;
 private:
-    void toTable(LogViewer *viewer);
+    void setupUi();
+    //void toTable(LogViewer *viewer);
 };
 
 #endif // LOGVIEWERSETTINGSWIDGET_H

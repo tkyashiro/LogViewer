@@ -181,16 +181,7 @@ void LogViewer::onCellDoubleClicked(const QModelIndex &index)
     switch (index.column()) {
     case LogModel::eFile:
     {
-        const QString &file = model_->data(index, Qt::DisplayRole).toString();
-        if (file.isEmpty())
-        {
-            return;
-        }
-        const bool b = QDesktopServices::openUrl( QUrl::fromLocalFile(file) );
-        if (!b)
-        {
-            QMessageBox::warning(this, tr("Failed to open file"), tr("Could not open %1").arg(file));
-        }
+        tryOpenFile(index);
         break;
     }
     case LogModel::eMessage:
@@ -200,6 +191,33 @@ void LogViewer::onCellDoubleClicked(const QModelIndex &index)
     }
     default:
         break;
+    }
+}
+
+void LogViewer::tryOpenFile(const QModelIndex &index)
+{
+    QString file = model_->data(index, Qt::DisplayRole).toString();
+    const QString &from = sourceMapping_.first;
+    if (from.isEmpty())
+    {
+        // do nothing, use as it is
+    }
+    else
+    {
+        const Qt::CaseSensitivity cs = Qt::CaseInsensitive;
+        if (!file.startsWith(from, cs))
+        {
+            QMessageBox::warning(this, tr("Failed to open file"), tr("Could not open %1").arg(file));
+            return;
+        }
+        file.replace(from, sourceMapping_.second, cs);
+    }
+
+    const QUrl url = QUrl::fromLocalFile(file);
+    const bool b = QDesktopServices::openUrl(url);
+    if (!b)
+    {
+        QMessageBox::warning(this, tr("Failed to open file"), tr("Could not open %1").arg(file));
     }
 }
 

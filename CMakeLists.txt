@@ -41,14 +41,14 @@ QT5_USE_MODULES(LogViewer Widgets)
 
 ###
 set(testfiles
-	tests/LogSourceTest.cpp
-	)
+    tests/LogSourceTest.cpp
+    )
 
 foreach(testfile ${testfiles})
-	get_filename_component(testname ${testfile} NAME_WE)
-	add_executable(${testname} ${testfile})
-	target_link_libraries(${testname} LogLib)
-	QT5_USE_MODULES(${testname} Test)
-	add_test(${testname} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${testname})
+    get_filename_component(testname ${testfile} NAME_WE)
+    add_executable(${testname} ${testfile})
+    target_link_libraries(${testname} LogLib)
+    QT5_USE_MODULES(${testname} Test)
+    add_test(${testname} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${testname})
 endforeach(testfile)
 
