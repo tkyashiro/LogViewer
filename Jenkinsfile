@@ -7,19 +7,19 @@ node
 
 	stage("CMake")
 	{
-		sh "mkdir -p build && cd build"
-		sh "cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ../"
+		sh "mkdir -p build"
+		sh "cd build && cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ../"
 	}
 
 	stage("Build")
 	{
-		sh "cmake --build . --target clean"
-		sh "cmake --build . --target all"
+		sh "cd build && cmake --build . --target clean"
+		sh "cd build && cmake --build . --target all"
 	}
 
 	stage("Test")
 	{
-		sh "cmake --build . --target test"
+		sh "cd build && cmake --build . --target test"
 	}
 
 	stage("Pack")
