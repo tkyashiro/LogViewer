@@ -1,5 +1,10 @@
 node
 {
+	stage("Checkout")
+	{
+		bit url: 'https://github.com/tkyashiro/LogViewer.git'
+	}
+
 	stage("CMake")
 	{
 		sh "mkdir -p build && cd build"
