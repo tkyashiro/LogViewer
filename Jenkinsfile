@@ -2,17 +2,17 @@ node("")
 {
 	stage("CMake")
 	{
-		bat "cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo"
+		echo "cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo"
 	}
 
 	stage("Build")
 	{
-		bat "cmake --build . --target clean"
-		bat "cmake --build . --target all"
+		echo "cmake --build . --target clean"
+		echo "cmake --build . --target all"
 	}
 
 	stage("Test")
 	{
-		bat "cmake --build . --target test"
+		echo "cmake --build . --target test"
 	}
 }
