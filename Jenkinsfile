@@ -24,6 +24,6 @@ node
 
 	stage("Pack")
 	{
-		archiveArtifact artifacts: 'build/bin/*'
+		archiveArtifacts artifacts: 'build/bin/*'
 	}
 }
