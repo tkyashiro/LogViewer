@@ -13,13 +13,13 @@ node
 
 	stage("Build")
 	{
-		sh "cd build && cmake --build . --target clean"
-		sh "cd build && cmake --build . --target all"
+		sh "cd build && cmake --build . --target clean && cmake --build . --target all"
 	}
 
 	stage("Test")
 	{
-		sh "cd build && cmake --build . --target test"
+		sh "cd build && rm -rf ./Testnig/ && ctest --no-compress-output -T Test || /usr/bin/true"
+		juint 'build/Testing/*.xml'
 	}
 
 	stage("Pack")
