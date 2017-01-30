@@ -1,18 +1,24 @@
-node("")
+node
 {
 	stage("CMake")
 	{
-		echo "cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo"
+		sh "mkdir -p build && cd build"
+		sh "cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ../"
 	}
 
 	stage("Build")
 	{
-		echo "cmake --build . --target clean"
-		echo "cmake --build . --target all"
+		sh "cmake --build . --target clean"
+		sh "cmake --build . --target all"
 	}
 
 	stage("Test")
 	{
-		echo "cmake --build . --target test"
+		sh "cmake --build . --target test"
+	}
+
+	stage("Pack")
+	{
+		archiveArtifact artifacts: 'build/bin/*'
 	}
 }
