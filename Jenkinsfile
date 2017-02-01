@@ -18,7 +18,7 @@ node
 
 	stage("Test")
 	{
-		sh "cd build && ls && rm -rf ./Testing/ && ls && ctest --no-compress-output -T Test || /usr/bin/true"
+		sh "cd build && rm -rf ./Testing/ && ctest --no-compress-output -T Test || /usr/bin/true"
 		step([$class: 'XUnitBuilder',
 			: [[$class: 'FailedThreshold', unstableThreshold: '1']],
 			: [[$class: 'CTestType', pattern: 'build/Testing/**/Test.xml']]])
