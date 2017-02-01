@@ -18,11 +18,13 @@ node
 
 	stage("Test")
 	{
-		sh "cd build && rm -rf ./Testnig/ && ctest --no-compress-output -T Test || /usr/bin/true"
-		junit 'build/Testing/**/Test.xml'
+		sh "cd build && ls && rm -rf ./Testing/ && ls && ctest --no-compress-output -T Test || /usr/bin/true"
+		step([$class: 'XUnitBuilder',
+			: [[$class: 'FailedThreshold', unstableThreshold: '1']],
+			: [[$class: 'CTestType', pattern: 'build/Testing/**/Test.xml']]])
 	}
 
-	stage("Pack")
+	stage("Archive")
 	{
 		archiveArtifacts artifacts: 'build/bin/*'
 	}
