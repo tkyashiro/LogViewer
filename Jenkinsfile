@@ -20,8 +20,8 @@ node
 	{
 		sh "cd build && rm -rf ./Testing/ && ctest --no-compress-output -T Test || /usr/bin/true"
 		step([$class: 'XUnitBuilder',
-			: [[$class: 'FailedThreshold', unstableThreshold: '1']],
-			: [[$class: 'CTestType', pattern: 'build/Testing/**/Test.xml']]])
+			[[$class: 'FailedThreshold', unstableThreshold: '1']],
+			[[$class: 'CTestType', pattern: 'build/Testing/**/Test.xml']]])
 	}
 
 	stage("Archive")
