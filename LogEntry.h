@@ -20,6 +20,10 @@ public:
     };
 public:
 	LogEntry();
+    LogEntry( QString severity,
+              QString func, QString file, int32_t line,
+              QString message,
+              int64_t thread, QDateTime time );
 
 	QString getSeverity() const;
 	void setSeverity(const QString &severity);

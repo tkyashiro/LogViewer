@@ -1,6 +1,13 @@
 #include "LogModelProxy.h"
 #include "LogModel.h"
 
+namespace 
+{
+QVariant withRegExp(const QVariant &original, const QRegExp &regexp);
+QVariant withRegExp(const QVariant &original, const QDateTime &from, const QDateTime &to);
+}
+
+
 LogModelProxy::LogModelProxy()
 {
 }
@@ -11,7 +18,7 @@ QVariant LogModelProxy::headerData(int section, Qt::Orientation orientation, int
     {
         switch (section) {
         case LogModel::eTime    : return QVariant(); ///@todo
-        case LogModel::eThread  : return QVariant();///@todo
+        case LogModel::eThread  : return QVariant(); ///@todo
         case LogModel::eSeverity: return severityFilter_;
         case LogModel::eMessage : return messageFilter_;
         case LogModel::eFunc    : return funcFilter_;
@@ -23,18 +30,12 @@ QVariant LogModelProxy::headerData(int section, Qt::Orientation orientation, int
         }
     }
 
-    auto withRegExp = [](const QVariant &original, const QRegExp &regexp)
-    {
-        return regexp.isEmpty() ? original
-                                : QVariant(QString("%1 (%2)").arg(original.toString()).arg(regexp.pattern()));
-    };
-
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal)
     {
         const QVariant srcData = sourceModel()? sourceModel()->headerData(section, orientation, role)
                                               : QVariant();
         switch (section) {
-        case LogModel::eTime    : return srcData; ///@todo
+        case LogModel::eTime    : return withRegExp(srcData, minDateTime_, maxDateTime_);
         case LogModel::eThread  : return srcData; ///@todo
         case LogModel::eSeverity: return withRegExp(srcData, severityFilter_);
         case LogModel::eMessage : return withRegExp(srcData, messageFilter_);
@@ -49,6 +50,28 @@ QVariant LogModelProxy::headerData(int section, Qt::Orientation orientation, int
 
     return sourceModel()? sourceModel()->headerData(section, orientation, role)
                         : QVariant();
+}
+
+namespace 
+{
+QVariant withRegExp(const QVariant &original, const QRegExp &regexp)
+{
+    return regexp.isEmpty() ? original
+                            : QVariant(QString("%1 (%2)").arg(original.toString()).arg(regexp.pattern()));
+}
+
+QVariant withRegExp(const QVariant &original, const QDateTime &from, const QDateTime &to)
+{
+    if (!from.isValid() && !to.isValid())
+    {
+        return original;
+    }
+    QString s = QString("%1 (%2 ~ %3)")
+        .arg(original.toString())
+        .arg(from.isValid() ? from.toString("yyyy/MM/dd hh:mm:ss") : QString())
+        .arg(to.isValid() ? to.toString("yyyy/MM/dd hh:mm:ss") : QString());
+    return QVariant(s);
+}
 }
 
 bool LogModelProxy::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
@@ -183,7 +206,7 @@ bool LogModelProxy::filterAcceptsRow(int source_row, const QModelIndex &source_p
     if (maxDateTime_.isValid())
     {
         QModelIndex i = sourceModel()->index(source_row, LogModel::eTime, source_parent);
-        if ( sourceModel()->data(i).toDateTime() < maxDateTime_ )
+        if ( sourceModel()->data(i).toDateTime() > maxDateTime_ )
         {
             return false;
         }

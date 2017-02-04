@@ -16,6 +16,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+### LogLib
 set(LogViewer_SOURCES
     Log4NetParser.cpp
     LogEntry.cpp
@@ -25,23 +26,25 @@ set(LogViewer_SOURCES
     LogSourceFile.cpp
     )
 
+add_library(LogLib SHARED ${LogViewer_SOURCES})
+QT5_USE_MODULES(LogLib Core)
+QT5_USE_MODULES(LogLib Gui)
+
+### GUI components
 set (LogViewer_UI_SOURCES
     LogViewer.cpp
     LogViewerSettingsWidget.cpp
     mainwindow.cpp
     mainwindow.ui)
 
-add_library(LogLib SHARED ${LogViewer_SOURCES})
-QT5_USE_MODULES(LogLib Core)
-QT5_USE_MODULES(LogLib Gui)
-
 add_executable(LogViewer WIN32 main.cpp ${LogViewer_UI_SOURCES})
 target_link_libraries(LogViewer LogLib)
 QT5_USE_MODULES(LogViewer Widgets)
 
-###
+### Tests
 set(testfiles
     tests/LogSourceTest.cpp
+    tests/LogModelProxyTest.cpp
     )
 
 foreach(testfile ${testfiles})

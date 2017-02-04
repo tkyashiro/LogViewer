@@ -5,6 +5,17 @@ LogEntry::LogEntry()
 {
 }
 
+LogEntry::LogEntry( QString severity,
+                    QString func, QString file, int32_t line,
+                    QString message,
+                    int64_t thread, QDateTime time )
+    : severity_(severity),
+      func_(func), file_(file), line_(line),
+      message_(message),
+      thread_(thread), time_(time)
+{
+}
+
 QString LogEntry::getSeverity() const
 {
 	return severity_;
