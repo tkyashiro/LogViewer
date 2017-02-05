@@ -13,7 +13,7 @@
 #include <QLayout>
 #include <QSettings>
 
-#define TEST_TYA 1
+#define TEST_TYA 0
 //#define TEST_IS
 
 MainWindow::MainWindow(QWidget *parent) :

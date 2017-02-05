@@ -17,7 +17,13 @@ QVariant LogModelProxy::headerData(int section, Qt::Orientation orientation, int
     if (role == FilterRole && orientation == Qt::Horizontal)
     {
         switch (section) {
-        case LogModel::eTime    : return QVariant(); ///@todo
+        case LogModel::eTime:
+        {
+            QVariantMap vm;
+            vm["minDateTime"] = minDateTime_;
+            vm["maxDateTime"] = maxDateTime_;
+            return vm;
+        }
         case LogModel::eThread  : return QVariant(); ///@todo
         case LogModel::eSeverity: return severityFilter_;
         case LogModel::eMessage : return messageFilter_;
@@ -76,10 +82,16 @@ QVariant withRegExp(const QVariant &original, const QDateTime &from, const QDate
 
 bool LogModelProxy::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
 {
-    if (orientation == Qt::Horizontal)
+    if (orientation == Qt::Horizontal && role == FilterRole)
     {
         switch (section) {
-        case LogModel::eTime    : break; ///@todo
+        case LogModel::eTime:
+        {
+            QVariantMap vm = value.toMap();
+            setMinDateTime(vm["minDateTime"].toDateTime());
+            setMaxDateTime(vm["maxDateTime"].toDateTime());
+            break;
+        }
         case LogModel::eThread  : break; ///@todo
         case LogModel::eSeverity: setSeverityFilter(value.toRegExp()); break;;
         case LogModel::eMessage : setMessageFilter(value.toRegExp()); break;;

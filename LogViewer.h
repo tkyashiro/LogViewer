@@ -52,7 +52,10 @@ private:
     void onTimeOut();
     void logsAdded( int n );
     void maybeScroll();
+
     void inputFilter(int idx);
+    void textFilterDialog(int idx);
+    void timeFilterDialog();
 };
 
 
