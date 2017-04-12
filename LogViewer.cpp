@@ -293,15 +293,16 @@ void LogViewer::tryOpenFile(const QModelIndex &index)
     else
     {
         const Qt::CaseSensitivity cs = Qt::CaseInsensitive;
-        if (!file.startsWith(from, cs))
+        if (!file.simplified().startsWith(from, cs))
         {
-            QMessageBox::warning(this, tr("Failed to open file"), tr("Could not open %1").arg(file));
+            QMessageBox::warning(this, tr("Failed to open file"),
+                                 tr("The path (%1) is not starting with (%2)").arg(file).arg(from));
             return;
         }
         file.replace(from, sourceMapping_.second, cs);
     }
 
-    const QUrl url = QUrl::fromLocalFile(file);
+    const QUrl url = QUrl::fromLocalFile(file.simplified());
     const bool b = QDesktopServices::openUrl(url);
     if (!b)
     {

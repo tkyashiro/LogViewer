@@ -26,9 +26,13 @@ set(LogViewer_SOURCES
     LogSourceFile.cpp
     )
 
-add_library(LogLib SHARED ${LogViewer_SOURCES})
+add_library(LogLib   SHARED ${LogViewer_SOURCES})
 QT5_USE_MODULES(LogLib Core)
 QT5_USE_MODULES(LogLib Gui)
+
+add_library(LogLib_s STATIC ${LogViewer_SOURCES})
+QT5_USE_MODULES(LogLib_s Core)
+QT5_USE_MODULES(LogLib_s Gui)
 
 ### GUI components
 set (LogViewer_UI_SOURCES
@@ -38,7 +42,7 @@ set (LogViewer_UI_SOURCES
     mainwindow.ui)
 
 add_executable(LogViewer WIN32 main.cpp ${LogViewer_UI_SOURCES})
-target_link_libraries(LogViewer LogLib)
+target_link_libraries(LogViewer LogLib_s)
 QT5_USE_MODULES(LogViewer Widgets)
 
 ### Tests
@@ -50,7 +54,7 @@ set(testfiles
 foreach(testfile ${testfiles})
     get_filename_component(testname ${testfile} NAME_WE)
     add_executable(${testname} ${testfile})
-    target_link_libraries(${testname} LogLib)
+    target_link_libraries(${testname} LogLib_s)
     QT5_USE_MODULES(${testname} Test)
     add_test(${testname} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${testname})
 endforeach(testfile)
