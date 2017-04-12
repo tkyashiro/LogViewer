@@ -168,7 +168,7 @@ void MainWindow::openSource( const QString &path )
 #else
     const QString exp(
                 ".*: (\\d+-\\d+-\\d+ \\d+:\\d+:\\d+,\\d+): \\[(\\d+)\\]: (.*)\\s*:\\s*" // PC name\Account Name: 2016-12-01 16:20:51,640: [1]: INFO :
-                "\\[(.*)\\]\\s*-\\s*(\\d+)\\s*-\\s*(.+)\\r"                             // [FuncName] - 207 - path to the file may include space.cpp
+                "\\[(.*)\\]\\s*-\\s*(\\d+)\\s*-\\s*([^\\r]+)\\r"                             // [FuncName] - 207 - path to the file may include space.cpp
                 "\\s*(\\S.*)$"                                                          // log log log log...
                 );
 
