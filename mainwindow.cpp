@@ -158,10 +158,9 @@ void MainWindow::openSource(const QString& path)
 
     std::unique_ptr<LogSourceFile> source(new LogSourceFile(parser.release()));
 #else
-    const QString exp(
-        ".*: (\\d+-\\d+-\\d+ \\d+:\\d+:\\d+,\\d+): \\[(\\d+)\\]: (.*)\\s*:\\s*" // PC name\Account Name: 2016-12-01 16:20:51,640: [1]: INFO :
-        "\\[(.*)\\]\\s*-\\s*(\\d+)\\s*-\\s*(.+)\\r" // [FuncName] - 207 - path to the file may include space.cpp
-        "\\s*(\\S.*)$" // log log log log...
+    const QString exp(".*: (\\d+-\\d+-\\d+ \\d+:\\d+:\\d+,\\d+): \\[(\\d+)\\]: (.*)\\s*:\\s*" // PC name\Account Name: 2016-12-01 16:20:51,640: [1]: INFO :
+                      "\\[(.*)\\]\\s*-\\s*(\\d+)\\s*-\\s*([^\\r]+)\\r" // [FuncName] - 207 - path to the file may include space.cpp
+                      "\\s*(\\S.*)$" // log log log log...
         );
 
     std::unique_ptr<RegExpParser> parser(new RegExpParser(exp));
