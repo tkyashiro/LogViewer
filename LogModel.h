@@ -11,8 +11,7 @@
 
 #include <vector>
 
-class LogModel : public QAbstractTableModel
-{
+class LogModel : public QAbstractTableModel {
     Q_OBJECT
 public:
     enum {
@@ -25,31 +24,34 @@ public:
         eLine,
         eSentinel
     };
+
 public:
-    void append( const LogEntry &e );
-    void append( const std::vector<LogEntry> && l );
+    void append(const LogEntry& e);
+    void append(const std::vector<LogEntry>&& l);
     void clear();
 
-    bool insertRow(int row, const QModelIndex &parent);
-    bool insertRows(int row, int count, const QModelIndex &parent);
+    bool insertRow(int row, const QModelIndex& parent);
+    bool insertRows(int row, int count, const QModelIndex& parent);
 
-    bool setData(const QModelIndex &index, const QVariant &value, int role);
-    QVariant data( const QModelIndex &index, int role ) const;
+    bool setData(const QModelIndex& index, const QVariant& value, int role);
+    QVariant data(const QModelIndex& index, int role) const;
 
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
-    QMap<QString,QColor> getColors() const;
-    void setColors(const QMap<QString,QColor> &colors);
+    QMap<QString, QColor> getColors() const;
+    void setColors(const QMap<QString, QColor>& colors);
 
-    int rowCount( const QModelIndex &parent ) const;
-    int columnCount( const QModelIndex &parent ) const;
+    int rowCount(const QModelIndex& parent) const;
+    int columnCount(const QModelIndex& parent) const;
 
-    Q_SIGNAL void logsAdded( int n );
+    Q_SIGNAL void logsAdded(int n);
+
 private:
     std::vector<LogEntry> entries_;
-    QMap<QString,QColor> colors_;
+    QMap<QString, QColor> colors_;
+
 private:
-    void setData( int r, const LogEntry &e );
+    void setData(int r, const LogEntry& e);
 };
 
 #endif

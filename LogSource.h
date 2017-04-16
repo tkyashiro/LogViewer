@@ -9,13 +9,11 @@
 
 #include <memory>
 
-namespace std
-{
+namespace std {
 class mutex;
 }
 
-class LogSource : public QObject
-{
+class LogSource : public QObject {
 public:
     virtual ~LogSource();
 
@@ -23,11 +21,13 @@ public:
     std::vector<LogEntry> popAll();
 
     virtual bool hasError() const = 0;
+
 protected:
     LogSource();
 
-    void append( const LogEntry &e ) ;
-    void append( const std::vector<LogEntry> && l ) ;
+    void append(const LogEntry& e);
+    void append(const std::vector<LogEntry>&& l);
+
 private:
     std::unique_ptr<std::mutex> mutex_;
     std::vector<LogEntry> logs_;

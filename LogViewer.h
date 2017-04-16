@@ -13,26 +13,26 @@ class LogModelProxy;
 class QLabel;
 class QTableView;
 
-class LogViewer : public QWidget
-{
+class LogViewer : public QWidget {
     Q_OBJECT
 public:
-    LogViewer( QWidget *parent = 0 );
+    LogViewer(QWidget* parent = 0);
     ~LogViewer();
 
-    void setLogSource( LogSource *source );
+    void setLogSource(LogSource* source);
     void clear();
 
-    QMap<QString,QColor> getColors() const;
-    void setColors(const QMap<QString,QColor> &colors);
+    QMap<QString, QColor> getColors() const;
+    void setColors(const QMap<QString, QColor>& colors);
 
-    void setMapping(const QString &from, const QString &to)
+    void setMapping(const QString& from, const QString& to)
     {
-        sourceMapping_ = std::pair<QString,QString>(from,to);
+        sourceMapping_ = std::pair<QString, QString>(from, to);
     }
 
     QList<int> getColumnWidths() const;
-    void setColumnWidths( const QList<int> &widths );
+    void setColumnWidths(const QList<int>& widths);
+
 private:
     std::unique_ptr<LogSource> source_;
 
@@ -43,14 +43,15 @@ private:
     std::pair<QString, QString> sourceMapping_;
 
     int total_;
-    QLabel *lbl_;
-    QLabel *lblFailed_;
-    QTableView *table_;
+    QLabel* lbl_;
+    QLabel* lblFailed_;
+    QTableView* table_;
+
 private:
-    void onCellDoubleClicked(const QModelIndex &index);
-    void tryOpenFile(const QModelIndex &index);
+    void onCellDoubleClicked(const QModelIndex& index);
+    void tryOpenFile(const QModelIndex& index);
     void onTimeOut();
-    void logsAdded( int n );
+    void logsAdded(int n);
     void maybeScroll();
 
     void inputFilter(int idx);
@@ -58,7 +59,4 @@ private:
     void timeFilterDialog();
 };
 
-
 #endif
-
-

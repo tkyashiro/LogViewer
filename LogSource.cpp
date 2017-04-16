@@ -30,17 +30,16 @@ std::vector<LogEntry> LogSource::popAll()
     return e;
 }
 
-void LogSource::append( const LogEntry &e )
+void LogSource::append(const LogEntry& e)
 {
     mutex_->lock();
     logs_.push_back(e);
     mutex_->unlock();
 }
 
-void LogSource::append( const std::vector<LogEntry> && l )
+void LogSource::append(const std::vector<LogEntry>&& l)
 {
     mutex_->lock();
-    std::copy( l.begin(), l.end(), std::back_inserter(logs_) );
+    std::copy(l.begin(), l.end(), std::back_inserter(logs_));
     mutex_->unlock();
 }
-

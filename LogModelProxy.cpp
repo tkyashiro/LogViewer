@@ -1,12 +1,10 @@
 #include "LogModelProxy.h"
 #include "LogModel.h"
 
-namespace 
-{
-QVariant withRegExp(const QVariant &original, const QRegExp &regexp);
-QVariant withRegExp(const QVariant &original, const QDateTime &from, const QDateTime &to);
+namespace {
+QVariant withRegExp(const QVariant& original, const QRegExp& regexp);
+QVariant withRegExp(const QVariant& original, const QDateTime& from, const QDateTime& to);
 }
-
 
 LogModelProxy::LogModelProxy()
 {
@@ -14,98 +12,116 @@ LogModelProxy::LogModelProxy()
 
 QVariant LogModelProxy::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (role == FilterRole && orientation == Qt::Horizontal)
-    {
+    if (role == FilterRole && orientation == Qt::Horizontal) {
         switch (section) {
-        case LogModel::eTime:
-        {
+        case LogModel::eTime: {
             QVariantMap vm;
             vm["minDateTime"] = minDateTime_;
             vm["maxDateTime"] = maxDateTime_;
             return vm;
         }
-        case LogModel::eThread  : return QVariant(); ///@todo
-        case LogModel::eSeverity: return severityFilter_;
-        case LogModel::eMessage : return messageFilter_;
-        case LogModel::eFunc    : return funcFilter_;
-        case LogModel::eFile    : return fileFilter_;
-        case LogModel::eLine    : return QVariant();
+        case LogModel::eThread:
+            return QVariant(); ///@todo
+        case LogModel::eSeverity:
+            return severityFilter_;
+        case LogModel::eMessage:
+            return messageFilter_;
+        case LogModel::eFunc:
+            return funcFilter_;
+        case LogModel::eFile:
+            return fileFilter_;
+        case LogModel::eLine:
+            return QVariant();
         case LogModel::eSentinel:
         default:
             return QVariant();
         }
     }
 
-    if (role == Qt::DisplayRole && orientation == Qt::Horizontal)
-    {
-        const QVariant srcData = sourceModel()? sourceModel()->headerData(section, orientation, role)
-                                              : QVariant();
+    if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
+        const QVariant srcData = sourceModel() ? sourceModel()->headerData(section, orientation, role)
+                                               : QVariant();
         switch (section) {
-        case LogModel::eTime    : return withRegExp(srcData, minDateTime_, maxDateTime_);
-        case LogModel::eThread  : return srcData; ///@todo
-        case LogModel::eSeverity: return withRegExp(srcData, severityFilter_);
-        case LogModel::eMessage : return withRegExp(srcData, messageFilter_);
-        case LogModel::eFunc    : return withRegExp(srcData, funcFilter_);
-        case LogModel::eFile    : return withRegExp(srcData, fileFilter_);
-        case LogModel::eLine    : return srcData;
+        case LogModel::eTime:
+            return withRegExp(srcData, minDateTime_, maxDateTime_);
+        case LogModel::eThread:
+            return srcData; ///@todo
+        case LogModel::eSeverity:
+            return withRegExp(srcData, severityFilter_);
+        case LogModel::eMessage:
+            return withRegExp(srcData, messageFilter_);
+        case LogModel::eFunc:
+            return withRegExp(srcData, funcFilter_);
+        case LogModel::eFile:
+            return withRegExp(srcData, fileFilter_);
+        case LogModel::eLine:
+            return srcData;
         case LogModel::eSentinel:
         default:
             return srcData;
         }
     }
 
-    return sourceModel()? sourceModel()->headerData(section, orientation, role)
-                        : QVariant();
+    return sourceModel() ? sourceModel()->headerData(section, orientation, role)
+                         : QVariant();
 }
 
-namespace 
-{
-QVariant withRegExp(const QVariant &original, const QRegExp &regexp)
+namespace {
+QVariant withRegExp(const QVariant& original, const QRegExp& regexp)
 {
     return regexp.isEmpty() ? original
                             : QVariant(QString("%1 (%2)").arg(original.toString()).arg(regexp.pattern()));
 }
 
-QVariant withRegExp(const QVariant &original, const QDateTime &from, const QDateTime &to)
+QVariant withRegExp(const QVariant& original, const QDateTime& from, const QDateTime& to)
 {
-    if (!from.isValid() && !to.isValid())
-    {
+    if (!from.isValid() && !to.isValid()) {
         return original;
     }
     QString s = QString("%1 (%2 ~ %3)")
-        .arg(original.toString())
-        .arg(from.isValid() ? from.toString("yyyy/MM/dd hh:mm:ss") : QString())
-        .arg(to.isValid() ? to.toString("yyyy/MM/dd hh:mm:ss") : QString());
+                    .arg(original.toString())
+                    .arg(from.isValid() ? from.toString("yyyy/MM/dd hh:mm:ss") : QString())
+                    .arg(to.isValid() ? to.toString("yyyy/MM/dd hh:mm:ss") : QString());
     return QVariant(s);
 }
 }
 
-bool LogModelProxy::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
+bool LogModelProxy::setHeaderData(int section, Qt::Orientation orientation, const QVariant& value, int role)
 {
-    if (orientation == Qt::Horizontal && role == FilterRole)
-    {
+    if (orientation == Qt::Horizontal && role == FilterRole) {
         switch (section) {
-        case LogModel::eTime:
-        {
+        case LogModel::eTime: {
             QVariantMap vm = value.toMap();
             setMinDateTime(vm["minDateTime"].toDateTime());
             setMaxDateTime(vm["maxDateTime"].toDateTime());
             break;
         }
-        case LogModel::eThread  : break; ///@todo
-        case LogModel::eSeverity: setSeverityFilter(value.toRegExp()); break;;
-        case LogModel::eMessage : setMessageFilter(value.toRegExp()); break;;
-        case LogModel::eFunc    : setFuncFilter(value.toRegExp()); break;;
-        case LogModel::eFile    : setFileFilter(value.toRegExp()); break;;
-        case LogModel::eLine    : break;
+        case LogModel::eThread:
+            break; ///@todo
+        case LogModel::eSeverity:
+            setSeverityFilter(value.toRegExp());
+            break;
+            ;
+        case LogModel::eMessage:
+            setMessageFilter(value.toRegExp());
+            break;
+            ;
+        case LogModel::eFunc:
+            setFuncFilter(value.toRegExp());
+            break;
+            ;
+        case LogModel::eFile:
+            setFileFilter(value.toRegExp());
+            break;
+            ;
+        case LogModel::eLine:
+            break;
         case LogModel::eSentinel:
         default:
             break;
         }
         return true;
-    }
-    else
-    {
+    } else {
         return sourceModel()->setHeaderData(section, orientation, value, role);
     }
 }
@@ -138,88 +154,74 @@ void LogModelProxy::setMessageFilter(const QRegExp& messageFilter)
     invalidateFilter();
 }
 
-void LogModelProxy::setThreadsFilter( const QList<int> &list )
+void LogModelProxy::setThreadsFilter(const QList<int>& list)
 {
     listThread_ = list;
     emit headerDataChanged(Qt::Horizontal, LogModel::eThread, LogModel::eThread);
     invalidateFilter();
 }
 
-void LogModelProxy::setMinDateTime( const QDateTime &minDate )
+void LogModelProxy::setMinDateTime(const QDateTime& minDate)
 {
     minDateTime_ = minDate;
     emit headerDataChanged(Qt::Horizontal, LogModel::eTime, LogModel::eTime);
     invalidateFilter();
 }
 
-void LogModelProxy::setMaxDateTime( const QDateTime &maxDate )
+void LogModelProxy::setMaxDateTime(const QDateTime& maxDate)
 {
     maxDateTime_ = maxDate;
     emit headerDataChanged(Qt::Horizontal, LogModel::eTime, LogModel::eTime);
     invalidateFilter();
 }
 
-bool LogModelProxy::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
+bool LogModelProxy::filterAcceptsRow(int source_row, const QModelIndex& source_parent) const
 {
-    if (!severityFilter_.isEmpty())
-    {
+    if (!severityFilter_.isEmpty()) {
         QModelIndex i = sourceModel()->index(source_row, LogModel::eSeverity, source_parent);
-        if ( !sourceModel()->data(i).toString().contains(severityFilter_) )
-        {
+        if (!sourceModel()->data(i).toString().contains(severityFilter_)) {
             return false;
         }
     }
 
-    if (!funcFilter_.isEmpty())
-    {
+    if (!funcFilter_.isEmpty()) {
         QModelIndex i = sourceModel()->index(source_row, LogModel::eFunc, source_parent);
-        if ( !sourceModel()->data(i).toString().contains(funcFilter_) )
-        {
+        if (!sourceModel()->data(i).toString().contains(funcFilter_)) {
             return false;
         }
     }
 
-    if (!messageFilter_.isEmpty())
-    {
+    if (!messageFilter_.isEmpty()) {
         QModelIndex i = sourceModel()->index(source_row, LogModel::eMessage, source_parent);
-        if ( !sourceModel()->data(i).toString().contains(messageFilter_) )
-        {
+        if (!sourceModel()->data(i).toString().contains(messageFilter_)) {
             return false;
         }
     }
 
-    if (!fileFilter_.isEmpty())
-    {
+    if (!fileFilter_.isEmpty()) {
         QModelIndex i = sourceModel()->index(source_row, LogModel::eFile, source_parent);
-        if ( !sourceModel()->data(i).toString().contains(fileFilter_) )
-        {
+        if (!sourceModel()->data(i).toString().contains(fileFilter_)) {
             return false;
         }
     }
 
-    if (!listThread_.isEmpty())
-    {
+    if (!listThread_.isEmpty()) {
         QModelIndex i = sourceModel()->index(source_row, LogModel::eThread, source_parent);
-        if ( ! listThread_.contains(sourceModel()->data(i).toInt()) )
-        {
+        if (!listThread_.contains(sourceModel()->data(i).toInt())) {
             return false;
         }
     }
 
-    if (minDateTime_.isValid())
-    {
+    if (minDateTime_.isValid()) {
         QModelIndex i = sourceModel()->index(source_row, LogModel::eTime, source_parent);
-        if ( sourceModel()->data(i).toDateTime() < minDateTime_ )
-        {
+        if (sourceModel()->data(i).toDateTime() < minDateTime_) {
             return false;
         }
     }
 
-    if (maxDateTime_.isValid())
-    {
+    if (maxDateTime_.isValid()) {
         QModelIndex i = sourceModel()->index(source_row, LogModel::eTime, source_parent);
-        if ( sourceModel()->data(i).toDateTime() > maxDateTime_ )
-        {
+        if (sourceModel()->data(i).toDateTime() > maxDateTime_) {
             return false;
         }
     }

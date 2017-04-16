@@ -7,18 +7,20 @@
 #include <QGroupBox>
 #include <QLabel>
 #include <QLineEdit>
-#include <QSettings>
 #include <QPushButton>
+#include <QSettings>
 #include <QTableWidget>
 
-namespace
-{
-enum { C_SEVERITY = 0, C_COLOR, C_NUM_COLUMN };
+namespace {
+enum { C_SEVERITY = 0,
+    C_COLOR,
+    C_NUM_COLUMN };
 }
 
-LogViewerSettingsWidget::LogViewerSettingsWidget(QSettings *settings, QWidget *parent) : QWidget(parent)
+LogViewerSettingsWidget::LogViewerSettingsWidget(QSettings* settings, QWidget* parent)
+    : QWidget(parent)
 {
-    Q_ASSERT( settings );
+    Q_ASSERT(settings);
 
     setupUi();
 
@@ -30,14 +32,14 @@ LogViewerSettingsWidget::LogViewerSettingsWidget(QSettings *settings, QWidget *p
 
 void LogViewerSettingsWidget::setupUi()
 {
-    QVBoxLayout *vl = new QVBoxLayout();
+    QVBoxLayout* vl = new QVBoxLayout();
 
     // vl->addWidget( table_ = new QTableWidget(this) );
     // table_->setColumnCount( C_NUM_COLUMN );
 
-    QGroupBox *grpSourceMap = new QGroupBox();
+    QGroupBox* grpSourceMap = new QGroupBox();
     {
-        QGridLayout *g = new QGridLayout();
+        QGridLayout* g = new QGridLayout();
         g->addWidget(new QLabel(tr("Source")), 0, 0);
         g->addWidget(lineSource_ = new QLineEdit(), 0, 1);
 
@@ -45,9 +47,9 @@ void LogViewerSettingsWidget::setupUi()
         g->addWidget(lineLocal_ = new QLineEdit(), 1, 1);
         grpSourceMap->setLayout(g);
     }
-    vl->addWidget( grpSourceMap );
+    vl->addWidget(grpSourceMap);
 
-    setLayout( vl );
+    setLayout(vl);
 }
 
 #if 0
@@ -87,7 +89,7 @@ QMap<QString, QColor> colorsFromTable( QTableWidget *w )
 }
 #endif
 
-void LogViewerSettingsWidget::applyOn( QSettings &settings, LogViewer *viewer ) const
+void LogViewerSettingsWidget::applyOn(QSettings& settings, LogViewer* viewer) const
 {
     // QMap<QString, QColor> colors = colorsFromTable(table_);
     // viewer->setColors( colors );
@@ -95,5 +97,5 @@ void LogViewerSettingsWidget::applyOn( QSettings &settings, LogViewer *viewer ) 
     settings.setValue("source", lineSource_->text());
     settings.setValue("local", lineLocal_->text());
 
-    viewer->setMapping( lineSource_->text(), lineLocal_->text() );
+    viewer->setMapping(lineSource_->text(), lineLocal_->text());
 }
