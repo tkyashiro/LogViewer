@@ -5,16 +5,12 @@
 #include "LogParser.h"
 #include "LogSourceFile.h"
 #include "LogViewer.h"
-#include "LogViewerSettingsWidget.h"
+#include "LogViewerSettings.h"
+#include "LogViewerSettingsDialog.h"
 
-#include <QDialogButtonBox>
-#include <QFileDialog>
-#include <QLabel>
-#include <QLayout>
+#include <QDebug>
 #include <QSettings>
-
-#define TEST_TYA 0
-//#define TEST_IS
+#include <QtWidgets>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -82,6 +78,7 @@ QList<T> listFromVariantList(const QVariantList& vl)
 void MainWindow::restoreLastSize()
 {
     QSettings s;
+    s.beginGroup("Window");
 
     if (s.contains("Size")) {
         resize(s.value("Size").toSize());
@@ -110,6 +107,7 @@ void MainWindow::saveSettings()
 void MainWindow::saveCurrentSize()
 {
     QSettings s;
+    s.beginGroup("Window");
     s.setValue("Size", size());
     s.setValue("Maximized", isMaximized());
 
@@ -131,52 +129,11 @@ void MainWindow::openSource(const QString& path)
         return;
     }
 
-///@todo load config
-#if TEST_TYA
-    const QString exp("\\[(.*)\\]\\[(.*)\\]\\[(.*)\\]\\[(.*)\\]\\[(.*)\\]\\[(.*)\\]");
-    std::unique_ptr<RegExpParser> parser(new RegExpParser(exp));
-    parser->setMapping(LogEntry::Item::severity, 1);
-    parser->setMapping(LogEntry::Item::time, 2);
-    parser->setMapping(LogEntry::Item::file, 3);
-    parser->setMapping(LogEntry::Item::func, 4);
-    parser->setMapping(LogEntry::Item::line, 5);
-    parser->setMapping(LogEntry::Item::message, 6);
-
+    qDebug() << "Active parse: " << LogViewerSettings::get()->getActiveParser();
+    auto s = LogViewerSettings::get()->getActiveParserSettings();
+    std::unique_ptr<RegExpParser> parser(new RegExpParser(s));
     std::unique_ptr<LogSourceFile> source(new LogSourceFile(parser.release()));
-#elif defined(TEST_IS)
-    const QString exp("[\\[(.*)\\]\\[(.*)\\]\\[T:(.*)\\]\\[L:(.*)\\]\\[(.*)\\]\\[(.*)\\]\\[(.*)\\](.*)");
-    //                 [1478063781833][2][T:1][L:1][C:/jenkinsWork/horus_release_64bit/Horus/Libraries/Model/private/Analysis.cpp][void Analysis::triggerUpdate()][296]Run analysis  19
-
-    std::unique_ptr<RegExpParser> parser(new RegExpParser(exp));
-    parser->setMapping(LogEntry::Item::time, 1);
-    parser->setMapping(LogEntry::Item::severity, 2);
-    parser->setMapping(LogEntry::Item::thread, 3);
-    parser->setMapping(LogEntry::Item::file, 5);
-    parser->setMapping(LogEntry::Item::func, 6);
-    parser->setMapping(LogEntry::Item::line, 7);
-    parser->setMapping(LogEntry::Item::message, 8);
-
-    std::unique_ptr<LogSourceFile> source(new LogSourceFile(parser.release()));
-#else
-    const QString exp(".*: (\\d+-\\d+-\\d+ \\d+:\\d+:\\d+,\\d+): \\[(\\d+)\\]: (.*)\\s*:\\s*" // PC name\Account Name: 2016-12-01 16:20:51,640: [1]: INFO :
-                      "\\[(.*)\\]\\s*-\\s*(\\d+)\\s*-\\s*([^\\r]+)\\r" // [FuncName] - 207 - path to the file may include space.cpp
-                      "\\s*(\\S.*)$" // log log log log...
-        );
-
-    std::unique_ptr<RegExpParser> parser(new RegExpParser(exp));
-    parser->setMapping(LogEntry::Item::time, 1);
-    parser->setMapping(LogEntry::Item::thread, 2);
-    parser->setMapping(LogEntry::Item::severity, 3);
-    parser->setMapping(LogEntry::Item::func, 4);
-    parser->setMapping(LogEntry::Item::line, 5);
-    parser->setMapping(LogEntry::Item::file, 6);
-    parser->setMapping(LogEntry::Item::message, 7);
-    parser->setDateTimeFormat("yyyy-MM-dd hh:mm:ss,zzz"); // 2016-11-10 14:49:22,965
-
-    std::unique_ptr<LogSourceFile> source(new LogSourceFile(parser.release()));
-    source->setSeparator(
-        "=====================================================================================================================");
-#endif
+    source->setSeparator(LogViewerSettings::get()->getSeparator());
 
     if (!source->setPath(path)) {
         return;
@@ -246,20 +203,6 @@ void MainWindow::openSettings()
 {
     QSettings s;
 
-    QDialog dlg;
-    LogViewerSettingsWidget* w = new LogViewerSettingsWidget(&s, &dlg);
-    QVBoxLayout* l = new QVBoxLayout();
-    {
-        dlg.setLayout(l);
-        l->addWidget(w);
-
-        QDialogButtonBox* btns = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-        connect(btns, &QDialogButtonBox::accepted, &dlg, &QDialog::accept);
-        connect(btns, &QDialogButtonBox::rejected, &dlg, &QDialog::reject);
-        l->addWidget(btns);
-    }
-    const int r = dlg.exec();
-    if (r == QDialog::Accepted) {
-        w->applyOn(s, viewer_);
-    }
+    LogViewerSettingsDialog dlg(&s, viewer_, this);
+    dlg.exec();
 }

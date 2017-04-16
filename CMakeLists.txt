@@ -12,6 +12,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -37,7 +38,10 @@ QT5_USE_MODULES(LogLib_s Gui)
 ### GUI components
 set (LogViewer_UI_SOURCES
     LogViewer.cpp
-    LogViewerSettingsWidget.cpp
+    LogViewerSettings.cpp
+    LogViewerSettingsDialog.cpp
+    RegExpParserSettingsWidget.cpp
+    SettingsDialog.cpp
     mainwindow.cpp
     mainwindow.ui)
 

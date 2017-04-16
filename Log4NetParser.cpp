@@ -15,6 +15,13 @@ RegExpParser::RegExpParser(const QString& exp)
     mapping_[LogEntry::Item::time] = -1;
 }
 
+RegExpParser::RegExpParser(const Settings& settings)
+{
+    regex_ = QRegExp(settings.pattern);
+    mapping_ = settings.mapping;
+    dateTimeFormat_ = settings.dateTimeFormat;
+}
+
 void RegExpParser::setMapping(LogEntry::Item item, int cap)
 {
     mapping_[item] = cap;

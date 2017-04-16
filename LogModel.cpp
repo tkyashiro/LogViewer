@@ -127,6 +127,7 @@ bool LogModel::insertRow(int row, const QModelIndex& parent)
     beginInsertRows(parent, row, row);
     entries_.push_back(LogEntry());
     endInsertRows();
+    return true;
 }
 
 bool LogModel::insertRows(int row, int count, const QModelIndex& parent)
@@ -136,11 +137,12 @@ bool LogModel::insertRows(int row, int count, const QModelIndex& parent)
         entries_.push_back(LogEntry());
     }
     endInsertRows();
+    return true;
 }
 
 void LogModel::setData(int r, const LogEntry& e)
 {
-    Q_ASSERT(r < entries_.size());
+    Q_ASSERT(r < (int)entries_.size());
     entries_[r] = e;
     emit dataChanged(index(r, 0), index(r, eSentinel));
 }
@@ -152,7 +154,7 @@ bool LogModel::setData(const QModelIndex& index, const QVariant& value, int role
     }
 
     const int r = index.row();
-    Q_ASSERT(r < entries_.size());
+    Q_ASSERT(r < (int)entries_.size());
     LogEntry& e = entries_[r];
     switch (index.column()) {
     case eSeverity:

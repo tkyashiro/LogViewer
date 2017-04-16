@@ -1,4 +1,4 @@
-#pragma ocne
+#pragma once
 
 #ifndef LOGSOURCE_H
 #define LOGSOURCE_H

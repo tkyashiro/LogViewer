@@ -14,7 +14,16 @@
 
 class RegExpParser : public LogParser {
 public:
+    struct Settings {
+        QString pattern;
+        std::map<LogEntry::Item, int> mapping;
+        QString dateTimeFormat;
+    };
+
+public:
     RegExpParser(const QString& exp);
+    RegExpParser(const Settings& settings);
+
     LogEntry parse(const QString& buf);
 
     void setMapping(LogEntry::Item item, int cap);
