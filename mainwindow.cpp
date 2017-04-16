@@ -204,5 +204,9 @@ void MainWindow::openSettings()
     QSettings s;
 
     LogViewerSettingsDialog dlg(&s, viewer_, this);
-    dlg.exec();
+    int ret = dlg.exec();
+
+    if (ret == QDialog::Accepted) {
+        LogViewerSettings::get()->save();
+    }
 }

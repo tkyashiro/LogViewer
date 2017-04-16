@@ -1,5 +1,7 @@
 #include "LogViewerSettings.h"
 
+#include <QSettings>
+
 LogViewerSettings* LogViewerSettings::get()
 {
     static LogViewerSettings theSettings;
@@ -7,8 +9,20 @@ LogViewerSettings* LogViewerSettings::get()
     return &theSettings;
 }
 
+
 LogViewerSettings::LogViewerSettings()
 {
+    load();
+}
+
+LogViewerSettings::~LogViewerSettings()
+{
+    save();
+}
+
+void LogViewerSettings::load()
+{
+    ///@todo these are defaults.
     {
         RegExpParser::Settings s;
         s.pattern = QString("\\[(.*)\\]\\[(.*)\\]\\[(.*)\\]\\[(.*)\\]\\[(.*)\\]\\[(.*)\\]");
@@ -55,9 +69,18 @@ LogViewerSettings::LogViewerSettings()
         s.dateTimeFormat = QString("yyyy-MM-dd hh:mm:ss,zzz"); // 2016-11-10 14:49:22,965
 
         this->parserSettings_["TEST2"] = s;
-
     }
 
-    active_ = "TEST2";
-    separator_ = "=====================================================================================================================";
+    QSettings s;
+    s.beginGroup("Parser");
+    active_ = s.value("Active", "TEST2").toString();
+    separator_ = s.value("Separator", "=====================================================================================================================").toString();
+}
+
+void LogViewerSettings::save()
+{
+    QSettings s;
+    s.beginGroup("Parser");
+    s.setValue("Active", active_);
+    s.setValue("Separator", separator_);
 }

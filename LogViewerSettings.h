@@ -9,6 +9,10 @@
 class LogViewerSettings {
 public:
     static LogViewerSettings* get();
+    ~LogViewerSettings();
+
+    void save();
+    void load();
 
     void setActiveParser(const QString& s)
     {
